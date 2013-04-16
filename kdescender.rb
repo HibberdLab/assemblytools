@@ -119,7 +119,7 @@ r = $opts.right
 first = true
 t0 = Time.now # time the whole run
 toclean = nil # don't clean up during the first round
-(opts.mink..opts.maxk).step(opts.kstep).reverse_each do |k|
+($opts.mink..$opts.maxk).step($opts.kstep).reverse_each do |k|
   t1 = Time.now # time this assembly
   puts "running assembly with k = #{k}"
   case $opts.assembler
