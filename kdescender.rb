@@ -30,6 +30,7 @@ EOS
   opt :mink, "minimum K-mer size (must be odd)", :default => 25, :type => Integer
   opt :maxk, "maximum K-mer size (must be odd)", :default => 85, :type => Integer
   opt :kstep, "K-mer descent step size (must be even)", :default => 10, :type => Integer
+  opt :recover, "(optional) K-mer size to recover previous kdescent", :default => 0, :type => Integer
 end
 
 # catch exit statuses (cluster sniping detector!)
@@ -120,6 +121,13 @@ first = true
 t0 = Time.now # time the whole run
 toclean = nil # don't clean up during the first round
 ($opts.mink..$opts.maxk).step($opts.kstep).reverse_each do |k|
+  if $opts.recover > 0 and $opts.recover != k
+    puts "Descending to recovery k: skipping k#{k}"
+    l = "k#{k}.1"
+    r = "k#{k}.2"
+    toclean = "k#{k}"
+    next
+  end
   t1 = Time.now # time this assembly
   puts "running assembly with k = #{k}"
   case $opts.assembler
