@@ -49,8 +49,6 @@ if opts.onlyrename
   exit
 end
 
-usearch = '~/apps/usearch'
-
 # remove polyA
 puts "removing polyA/T tails of #{opts.polyacutoff} or longer"
 `prinseq-lite.pl -fasta #{opts.input} -out_good #{indir}trimmed.#{infile} -trim_tail_left #{opts.polyacutoff} -trim_tail_right #{opts.polyacutoff}`
@@ -58,10 +56,10 @@ puts "removing polyA/T tails of #{opts.polyacutoff} or longer"
 
 # flatten the assembly
 puts "sorting by length"
-`#{usearch} --sortbylength #{indir}trimmed.#{infile} --output #{indir}sorted.#{infile} -quiet`
+`usearch --sortbylength #{indir}trimmed.#{infile} --output #{indir}sorted.#{infile} -quiet`
 `rm #{indir}trimmed.#{infile}` unless opts.nocleanup
 puts "removing completely redundant transcripts (100% sequence similarity)"
-`#{usearch} --cluster_smallmem #{indir}sorted.#{infile} --id 1 --centroids #{indir}centroids.#{infile} -quiet`
+`usearch --cluster_smallmem #{indir}sorted.#{infile} --id 1 --centroids #{indir}centroids.#{infile} -quiet`
 `rm #{indir}sorted.#{infile}` unless opts.nocleanup
 
 if opts.cap3
@@ -76,10 +74,10 @@ renameSeqs "#{indir}renamed.#{infile}", "#{indir}centroids.#{infile}"
 `rm #{indir}centroids.#{infile}` unless opts.nocleanup
 
 puts "re-sorting by length"
-`#{usearch} --sortbylength #{indir}renamed.#{infile} --output #{indir}sorted_renamed.#{infile} -quiet`
+`usearch --sortbylength #{indir}renamed.#{infile} --output #{indir}sorted_renamed.#{infile} -quiet`
 `rm #{indir}renamed.#{infile}` unless opts.nocleanup
 puts "clustering with similarity cutoff #{opts.idthreshold}"
-`#{usearch} --cluster_smallmem #{indir}sorted_renamed.#{infile} --id #{opts.idthreshold} --centroids #{indir}final.#{infile} -quiet`
+`usearch --cluster_smallmem #{indir}sorted_renamed.#{infile} --id #{opts.idthreshold} --centroids #{indir}final.#{infile} -quiet`
 `rm #{indir}sorted_renamed.#{infile}` unless opts.nocleanup
 
 puts "assembly post-processing finished! final assembly in file #{indir}final.#{infile}"

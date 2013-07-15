@@ -31,7 +31,6 @@ EOS
   opt :maxk, "maximum k-mer size (must be odd)", :default => 85, :type => Integer
   opt :kstep, "k-mer descent step size (must be even)", :default => 10, :type => Integer
   opt :recover, "(optional) k-mer size to recover previous kdescent", :default => 0, :type => Integer
-  opt :mergeeach, "merge contigs from previous steps"
 end
 
 # catch exit statuses (cluster sniping detector!)
@@ -108,18 +107,12 @@ def runVelvetOases(k, l, r, first)
   `~/apps/velveth k#{k} #{k} -fastq -shortPaired #{l} #{r} #{longstr}> k#{k}.log`
   `~/apps/velvetg k#{k} -read_trkg yes -cov_cutoff 3 -scaffolding yes -min_contig_lgth 200 -conserveLong yes -ins_length #{$opts.insertsize} -ins_length_sd #{$opts.insertsd} -min_pair_count 6 >> k#{k}.log`
   `~/apps/oases k#{k} -ins_length #{$opts.insertsize} -ins_length_sd #{$opts.insertsd} -scaffolding yes -cov_cutoff 3 -min_trans_lgth 200 -edgeFractionCutoff 0.1 -min_pair_count 6 >> k#{k}.log`
-  if ($opts.mergeeach)
-    puts "merging assembly at k#{k} with all previous contigs"
-    `~/apps/velveth k#{k} #{k} -long k#{k}/transcripts.fa longreads.fa`
-    `~/apps/velvetg k#{k} -read_trkg yes -conserveLong yes`
-    `~/apps/oases k#{k} -merge`
-  end
   # cleanup unneeded files
   Dir.chdir("k#{k}") do
     `rm Sequences Roadmaps PreGraph Graph2 LastGraph`
   end
 end
-puts "running #{$opts.assembler} k-descent from #{$opts.maxk} to #{$opts.mink}"
+puts "running #{$opts.assembler} k-descent from 90 to 25"
 
 l = $opts.left
 r = $opts.right
@@ -155,7 +148,7 @@ toclean = nil # don't clean up during the first round
   puts "building bowtie index for k#{k} assembly"
   `/usr/local/bin/bowtie2-build k#{k}/transcripts.fa k#{k} >> k#{k}.log`
   puts "filtering out reads mapping to k#{k} assembly"
-  `/usr/local/bin/bowtie2 --very-fast --met-file k#{k}.bowtie.metrics --no-mixed --no-discordant -p #{$opts.threads} --un-conc k#{k} --no-discordant --phred64 -x k#{k} -1 #{l} -2 #{r} > /dev/null`
+  `/usr/local/bin/bowtie2 --very-fast -p #{$opts.threads} --un-conc k#{k} --no-discordant --phred64 -x k#{k} -1 #{l} -2 #{r} > /dev/null`
   puts "storing unmapped reads for next step of descent"
   l = "k#{k}.1"
   r = "k#{k}.2"

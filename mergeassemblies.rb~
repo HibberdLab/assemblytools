@@ -27,7 +27,7 @@ finaliseassembly = File.dirname(__FILE__) + '/finaliseassembly.rb'
 
 # check all dependencies exist
 def missing(dep)
-  puts "could not find #{dep} - please check the path and correct the script"
+  puts 'could not find #{dep} - please check the path and correct the script'
 end
 
 [velveth, velvetg, oases, finaliseassembly].each do |d|
