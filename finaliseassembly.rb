@@ -45,11 +45,11 @@ def renameSeqs(outfile, infile)
 end
 
 if opts.onlyrename
-  renameSeqs("renamed.#{opts.infile}", infile)
+  renameSeqs("renamed.#{infile}", infile)
   exit
 end
 
-usearch = '~/apps/usearch'
+usearch = `which usearch`
 
 # remove polyA
 puts "removing polyA/T tails of #{opts.polyacutoff} or longer"
