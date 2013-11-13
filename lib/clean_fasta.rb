@@ -52,7 +52,7 @@ if __FILE__ == $0
   Trollop::die :fasta, "must exist" if !File.exist?(opts[:fasta]) if opts[:fasta]
 
   genome = Bio::FastaFormat.open(opts.fasta)
-  count=0
+  count = 0
   genome.each do |entry|
     a = split_around_N(entry.seq, opts.threshold)
     a.each_with_index do |seq, i|
@@ -66,6 +66,7 @@ if __FILE__ == $0
       else
         puts "#{seq}"
       end
+      count += 1
     end
   end
 end
