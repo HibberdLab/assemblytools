@@ -45,32 +45,27 @@ if __FILE__ == $0
     version "v0.0.1a"
     opt :fasta, "Fasta file to be cleaned", :required => true, :type => String
     opt :rename, "Rename contigs"
+    opt :uppercase, "Make all bases uppercase"
     opt :threshold, "How many Ns in a row required to split", :default => 2, :type => :int
   end
-
 
   Trollop::die :fasta, "must exist" if !File.exist?(opts[:fasta]) if opts[:fasta]
 
   genome = Bio::FastaFormat.open(opts.fasta)
   count=0
   genome.each do |entry|
-    # puts "#{entry.definition}"
-
     a = split_around_N(entry.seq, opts.threshold)
-    puts a
-    # if opts.rename
-    #   a.each do |seq|
-    #     puts ">#{count}"
-    #     puts "#{seq}"
-    #     count+=1
-    #   end
-    # else
-    #   a.each_with_index do |seq, i|
-    #     puts ">#{entry.definition}#{i}"
-    #     puts "#{seq}"
-    #   end
-    # end
-
+    a.each_with_index do |seq, i|
+      if opts.rename
+        puts ">#{count}"
+      else
+        puts ">#{entry.definition}#{i}"
+      end
+      if opts.uppercase
+        puts "#{seq.upcase}"
+      else
+        puts "#{seq}"
+      end
+    end
   end
-
 end
