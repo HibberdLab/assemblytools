@@ -88,5 +88,11 @@ class TestRecipSnpFinder < Test::Unit::TestCase
       a = split_around_N(@sequence7,2)
       assert a[0] == "ACGTACGTACNTACNTACGTACGTACGT", "there are #{a.length} sequences\n#{a}\n[\"ACGTACGTACNTACNTACGTACGTACGT\"]"
     end
+
+    should "14 run on test data and give result" do
+      a = `ruby lib/clean_fasta.rb -f test/test.fasta -r -m 5`
+      test_string = ">0\nACGTACGTACGTACGTACGT\n>1\nTGCATGCATGCATGCATGCA\n>2\nTGCAACGTATACGCACATGTGACGTACGTACGTACGACTGACTGA\n>3\nACGTACGTACGTACGT\n>4\nTGCATGCATGCATGCATGCA\n>5\nGCTAGCTAGCTAGCTAGCTA\n>6\nACGTACGTACGTACGT\n>7\nTGCATGCATGCATGCATGCA\n"
+      assert a == test_string, "script produced:\n#{a}\nexpected output was:\n#{test_string}"
+    end
   end
 end
