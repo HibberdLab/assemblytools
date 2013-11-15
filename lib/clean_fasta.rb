@@ -47,6 +47,7 @@ if __FILE__ == $0
     opt :rename, "Rename contigs"
     opt :uppercase, "Make all bases uppercase"
     opt :threshold, "How many Ns in a row required to split", :default => 2, :type => :int
+    opt :minimum, "Minimum size of new contigs formed", :default => 100, :type => :int
   end
 
   Trollop::die :fasta, "must exist" if !File.exist?(opts[:fasta]) if opts[:fasta]
@@ -56,17 +57,19 @@ if __FILE__ == $0
   genome.each do |entry|
     a = split_around_N(entry.seq, opts.threshold)
     a.each_with_index do |seq, i|
-      if opts.rename
-        puts ">#{count}"
-      else
-        puts ">#{entry.definition}#{i}"
+      if seq.length >= opts.minimum
+        if opts.rename
+          puts ">#{count}"
+        else
+          puts ">#{entry.definition}-#{i}"
+        end
+        if opts.uppercase
+          puts "#{seq.upcase}"
+        else
+          puts "#{seq}"
+        end
+        count += 1
       end
-      if opts.uppercase
-        puts "#{seq.upcase}"
-      else
-        puts "#{seq}"
-      end
-      count += 1
     end
   end
 end
